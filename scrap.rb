@@ -13,13 +13,31 @@ hackerHours = [] # all the member id who joined hackerhours group
 
 beginnerProgrammer = [] #all the member id who joined beginner programmer group
 
-CSV.open("scrap.csv", "wb") do |csv| # we sre saving information in csv file
+CSV.open("scrap.csv", "wb") do |csv| # saving information in csv file
   csv << ['HH_Member_ID', 'BP_Member_ID', 'Common_Member_ID']
 
 
+
+
+  # getting all the member id from the Hacker Hours group
+
+  # finding last page offset value for loop
+
+  basePage = agent.get('http://www.meetup.com/hackerhours/member/')
+  offsetMax = basePage.search('.nav-next')[0].attributes['href'].text
+
+  offsetMax = offsetMax.split('http://www.meetup.com/hackerhours/members/?offset=')
+  offsetMax = offsetMax[1].split('&sort=last_visited&desc=1')
+  offsetMax = offsetMax[0]
+  offsetMax = offsetMax.to_i
+
+
+  # offset value on first page is 0 therefore
   offset = 0
 
-  while offset < 3780
+  puts "Getting member id from Hacker Hours group......"
+
+  while offset <= offsetMax
 
       offset = offset.to_s
 
@@ -39,26 +57,34 @@ CSV.open("scrap.csv", "wb") do |csv| # we sre saving information in csv file
 
       offset += 20
   end
-
-  for i in 0..271
-    i = i.to_s
-    page2 = agent.get('http://www.meetup.com/BeginnerProgrammers/members/?offset=' + i)
-    count2 = page.search('.memName').count
-    i = i.to_i
-    i = i*20
-      for k in 0...count2
-
-        memberId = page2.search('.memName')[k].attributes['href'].text
-        memberId = memberId.split('http://www.meetup.com/BeginnerProgrammers/members/')
-        memberId = memberId[1].split('/')
-        memberId = memberId.to_s
-        beginnerProgrammer << memberId
-      end
-
-
-  end
-  puts hackerHours
-  puts
-  puts beginnerProgrammer
+  #
+  # puts "done"
+  # puts ".............."
+  #
+  # # getting all member id from beginer programmers group
+  #
+  # puts "Getting member id from Beginner Programmers group......"
+  #
+  # for i in 0..271
+  #   i = i.to_s
+  #   page2 = agent.get('http://www.meetup.com/BeginnerProgrammers/members/?offset=' + i)
+  #   count2 = page.search('.memName').count
+  #   i = i.to_i
+  #   i = i*20
+  #     for k in 0...count2
+  #
+  #       memberId = page2.search('.memName')[k].attributes['href'].text
+  #       memberId = memberId.split('http://www.meetup.com/BeginnerProgrammers/members/')
+  #       memberId = memberId[1].split('/')
+  #       memberId = memberId.to_s
+  #       beginnerProgrammer << memberId
+  #     end
+  #
+  #
+  # end
+  # puts "done"
+  puts hackerHours.count 
+  # puts
+  # puts beginnerProgrammer.count
 
 end
